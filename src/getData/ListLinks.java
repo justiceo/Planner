@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,98 +19,58 @@ public class ListLinks {
 	private List<String> processedList = new ArrayList<String>();
 	
     public void process(String url) throws IOException 
-    {
+    {    	
+    	Document doc = null;
+        try {
+        	doc = Jsoup.connect(url).userAgent("Mozilla").timeout(3000).get();
+        } 
+        catch(SocketTimeoutException e) {
+        	//force wait and retry
+        }
         
-        Document doc = Jsoup.connect(url).get();
         Elements links = doc.select("a[href]");
         
         //URL is WebTms home
         if(isHome(url)){
         	for(Element link: links) {
         		String linkStr = link.attr("abs:href").toString();
-        		
-        		if( linkStr.contains("quarterTermDetails")){
-        			if(! isAdded(linkStr, quarterList)){
-        				quarterList.add(linkStr);
-        			}
-        		}
+        		add ( linkStr, "quarterTermDetails", quarterList);
         	}
         	
         	processedList.add(url);
-        	
-        	//Now that we have a list of all the Quarters...
-        	for(String temp: quarterList) {
-        		if(! isAdded(temp, processedList)) {
-        			process(temp);
-        		}
-        	}
+        	goThrough( quarterList );
         }
         
         //URL is quarter page
         else if(url.contains("quarterTermDetails")){
         	for(Element link: links) {
         		String linkStr = link.attr("abs:href").toString();
-        		
-        		if( linkStr.contains("collSubj")){
-        			if(! isAdded(linkStr, collegeList)){
-        				collegeList.add(linkStr);
-        			}
-        		}        			
+        		add( linkStr, "collSubj", collegeList);
         	}
         	
         	processedList.add(url);
-        	
-        	//Now that we have a list of all the colleges...
-        	for(String temp: collegeList){
-        		if(! isAdded(temp, processedList)){
-        			process(temp);
-        		}
-        	}
+        	goThrough( collegeList );
         }
         
         //URL is college get all the subjects,
-        else if( url.contains("collSubj")){        	
-        	//extract all the colleges and subject 
+        else if( url.contains("collSubj")){  
         	for(Element link: links) {
         		String linkStr = link.attr("abs:href").toString();
-        		
-        		if(linkStr.contains("subjectDetails")) {
-        			if(! isAdded(linkStr, subjectList)){
-        				subjectList.add(linkStr);
-        			}
-        		}
+        		add(linkStr, "subjectDetails", subjectList);
         	}
         	
         	processedList.add(url);
-        	
-        	//Now that we have a list of all the subjects...
-        	for(String temp: subjectList) {
-        		if(! isAdded(temp, processedList)){
-        			process(temp);
-        		}
-        	}
+        	goThrough( subjectList );
         }
         
         //URL is major or subjects page
         else if(url.contains("subjectDetails")) {
         	for(Element link: links) {
         		String linkStr = link.attr("abs:href").toString();
-        		
-        		//if it is a course page
-        		if( linkStr.contains("courseDetails")) {
-        			if(! isAdded(linkStr, courseList)){
-        				courseList.add(linkStr);
-        			}
-        		}
+        		add( linkStr, "courseDetails", courseList);
         	}        	
-        	processedList.add(url);
-        	
-        	//Now we have a list of all the courses
-        	for(String temp: courseList) {
-        		if(! isAdded(temp, processedList)){
-        			process(temp);
-        		}
-        	}
+        	processedList.add( url );
+        	goThrough( courseList );
         }
         
         else if(url.contains("courseDetails")) {
@@ -125,21 +86,33 @@ public class ListLinks {
         
     }
     
-    private boolean isAdded(String str, List<String> list){
+    //Helper functions
+    
+    //Check if list contains a URL
+    private boolean isAdded(String url, List<String> list){
     	boolean isAdded = false;
-    	for(int i=0; i<list.size(); i++) {
-    		if ( list.get(i).equals(str)) {
+    	for(int i=0; i<list.size(); i++)
+    		if ( list.get(i).equals(url))
     			isAdded = true;
-    		}
-    	}
     	return isAdded;
     }
     
+    //Add URLs with this pattern to this list
+    private void add( String url, String pattern, List<String> list ){
+		if( url.contains(pattern)) 
+			if(! isAdded(url, list))
+				list.add(url);
+    }
+    
     private boolean isHome(String url) {
-    	if(url.equals("https://duapp2.drexel.edu/webtms_du/app")) {
-    		return true;
-    	}
+    	if(url.equals("https://duapp2.drexel.edu/webtms_du/app")) return true;
     	else return false;
+    }
+    
+    private void goThrough(List<String> list) throws IOException {
+    	for(String temp: list)
+    		if(! isAdded(temp, processedList))
+    			process(temp);
     }
     
     private void print(String str){
