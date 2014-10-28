@@ -32,57 +32,43 @@ public class ListLinks {
         
         //URL is WebTms home
         if(isHome(url)){
-        	for(Element link: links) {
-        		String linkStr = link.attr("abs:href").toString();
-        		add ( linkStr, "quarterTermDetails", quarterList);
-        	}
-        	
+        	add ( links, "quarterTermDetails", quarterList);
         	processedList.add(url);
         	goThrough( quarterList );
         }
         
         //URL is quarter page
         else if(url.contains("quarterTermDetails")){
-        	for(Element link: links) {
-        		String linkStr = link.attr("abs:href").toString();
-        		add( linkStr, "collSubj", collegeList);
-        	}
-        	
+        	add( links, "collSubj", collegeList);
         	processedList.add(url);
         	goThrough( collegeList );
         }
         
         //URL is college get all the subjects,
-        else if( url.contains("collSubj")){  
-        	for(Element link: links) {
-        		String linkStr = link.attr("abs:href").toString();
-        		add(linkStr, "subjectDetails", subjectList);
-        	}
-        	
+        else if( url.contains("collSubj")){
+        	add(links, "subjectDetails", subjectList);
         	processedList.add(url);
         	goThrough( subjectList );
         }
         
         //URL is major or subjects page
         else if(url.contains("subjectDetails")) {
-        	for(Element link: links) {
-        		String linkStr = link.attr("abs:href").toString();
-        		add( linkStr, "courseDetails", courseList);
-        	}        	
+        	add( links, "courseDetails", courseList);
         	processedList.add( url );
         	goThrough( courseList );
         }
         
+        //We have reached our base case. Time to process the page
         else if(url.contains("courseDetails")) {
-        	//We have reached our base case. Time to process the page
-        	return;
+        	BaseCase page = new BaseCase();
+        	page.traverse(doc);
         }
     	//by now we have all the subjects in the subjects list.
         print("\n=================================");
-    	print("quarter size " + quarterList.size());
+    	/*print("quarter size " + quarterList.size());
     	print("coll size " + collegeList.size());
     	print("subjects size " + subjectList.size());
-    	print("courses size " + courseList.size());
+    	print("courses size " + courseList.size());*/
         
     }
     
@@ -97,11 +83,14 @@ public class ListLinks {
     	return isAdded;
     }
     
-    //Add URLs with this pattern to this list
-    private void add( String url, String pattern, List<String> list ){
-		if( url.contains(pattern)) 
-			if(! isAdded(url, list))
-				list.add(url);
+    //Add links with this pattern to this list
+    private void add( Elements links, String pattern, List<String> list ){
+    	for(Element link: links) {
+    		String url = link.attr("abs:href").toString();
+	    	if( url.contains(pattern)) 
+				if(! isAdded(url, list))
+					list.add(url);
+    	}
     }
     
     private boolean isHome(String url) {
