@@ -16,7 +16,6 @@ public class ListLinks {
 	private List<String> collegeList = new ArrayList<String>();
 	private List<String> subjectList = new ArrayList<String>();
 	private List<String> courseList = new ArrayList<String>();
-	private List<String> processedList = new ArrayList<String>();
 	
     public void process(String url) throws IOException 
     {    	
@@ -33,28 +32,24 @@ public class ListLinks {
         //URL is WebTms home
         if(isHome(url)){
         	add ( links, "quarterTermDetails", quarterList);
-        	processedList.add(url);
         	goThrough( quarterList );
         }
         
         //URL is quarter page
         else if(url.contains("quarterTermDetails")){
         	add( links, "collSubj", collegeList);
-        	processedList.add(url);
         	goThrough( collegeList );
         }
         
         //URL is college get all the subjects,
         else if( url.contains("collSubj")){
         	add(links, "subjectDetails", subjectList);
-        	processedList.add(url);
         	goThrough( subjectList );
         }
         
         //URL is major or subjects page
         else if(url.contains("subjectDetails")) {
         	add( links, "courseDetails", courseList);
-        	processedList.add( url );
         	goThrough( courseList );
         }
         
@@ -68,10 +63,10 @@ public class ListLinks {
         //place "return" in any case you do not wish to run statements below
     	//by now we have all the subjects in the subjects list.
         print("\n=================================");
-    	print("quarter size " + quarterList.size());
+    	/*print("quarter size " + quarterList.size());
     	print("coll size " + collegeList.size());
     	print("subjects size " + subjectList.size());
-    	print("courses size " + courseList.size());
+    	print("courses size " + courseList.size());*/
         
     }
     
@@ -83,8 +78,7 @@ public class ListLinks {
     	for(Element link: links) {
     		String url = link.attr("abs:href").toString();
 	    	if( url.contains(pattern)) 
-				if(! list.contains(url))
-					list.add(url);
+				list.add(url);
     	}
     }
     
@@ -95,9 +89,7 @@ public class ListLinks {
     
     private void goThrough(List<String> list) throws IOException {
     	for(String temp: list)
-    		if(! processedList.contains(temp))
-    			process(temp);
-    		else print("processedlist contains this guy");
+    		process(temp);
     }
     
     private void print(String str){

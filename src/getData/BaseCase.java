@@ -1,7 +1,9 @@
 package getData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,6 +13,7 @@ public class BaseCase {
 	
 	private List<String> courseDetails = new ArrayList<String>();
 	private List<String> otherDetails = new ArrayList<String>();
+	private List<String> restrictions = new ArrayList<String>();
 	private String txtbkLink;
 	private String courseD;
 	private String college;
@@ -19,15 +22,15 @@ public class BaseCase {
 	private String co_req;
 	private String pre_req;
 	private String repeat;
+	private String temp;
+	private String credits;
 	
 	public void traverse(Document doc) {
 		Elements theader = doc.select(".tableHeader");
 		
 		//get course details
 		for(Element elem: theader){
-			String next = elem.nextElementSibling().text();
-			next = trim(next, 20);
-			courseDetails.add(next);
+			courseDetails.add(elem.nextElementSibling().text());
 		}
 		
 		//get textbook link
@@ -42,38 +45,17 @@ public class BaseCase {
 		//get course description
 		Elements cDescs = doc.select("div.courseDesc");
 		for(Element elem: cDescs) {
-			courseD = elem.text();
-			Element temp = elem.nextElementSibling();
-			college = temp.nextElementSibling().text();
-			temp = temp.nextElementSibling();
-			department = temp.nextElementSibling().text();
-			temp = temp.nextElementSibling();
-			temp = temp.nextElementSibling();
-			temp = temp.nextElementSibling();
-			enroll_rest = temp.nextElementSibling().text();
-			temp = temp.nextElementSibling();
-			if(temp.nextElementSibling().text().equals(""))
-				temp = temp.nextElementSibling();
-			co_req = temp.nextElementSibling().text();
-			temp = temp.nextElementSibling();
-			pre_req = temp.nextElementSibling().text();
-			temp = temp.nextElementSibling();
-			repeat = temp.nextElementSibling().text();
-			/*do {
-				temp = temp.nextElementSibling();
-				if (temp.text().equals("")){
-					temp = temp.nextElementSibling();
+			courseD = elem.text();			
+			Elements restElem = elem.siblingElements();
+			for(Element current: restElem){
+				if(!current.text().equals("")){
+					otherDetails.add(current.text());
 				}
-				else {
-					otherDetails.add(temp.text());
-				}
-			}while()
-			
-			*/
+			}
 		}
 		
-		/*
-		System.out.printf("%s\t%s\t%s\t%s\t%s\t%20s\t%20s\t%20s\t%15s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
+		String[] moreInfo = extract(otherDetails);
+		System.out.printf("\n%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s", 
 				courseDetails.get(0), 	//CRN
 				courseDetails.get(1), 	//subject code
 				courseDetails.get(2),	//course number
@@ -88,25 +70,50 @@ public class BaseCase {
 				courseDetails.get(11),	//Enroll
 				courseDetails.get(12),	//Section comments
 				courseDetails.get(13),	//Textbooks
-				courseDetails.get(14)	//dates
+				courseDetails.get(14),	//dates
+				moreInfo[0],			//College
+				moreInfo[1],			//Department
+				moreInfo[2],			//Pre-requisites
+				moreInfo[3],			//Co-requisites
+				moreInfo[4],			//repeat
+				moreInfo[5],			//Restrictions list
+				courseD					//Course Description
 				);	
-		
-		System.out.println(courseD);
-		System.out.println(college + "\n" + department + "\nen " + enroll_rest + "\nco " + co_req + "\npre " + pre_req + "\nrep " + repeat);
-		
-		*/
 	}
 	
-	public void print(String str){
-		System.out.println(str);
+	public String[] extract(List<String> list){
+		Iterator<String> item = list.iterator();
+		while(item.hasNext()){
+			String current = item.next();
+			if(current.startsWith("Credits")){
+				continue;
+			}
+			else if(current.startsWith("College")){
+				college = current.substring(9);
+			}
+			else if(current.startsWith("Department")){
+				department = current.substring(11);
+			}
+			else if(current.startsWith("Restrictions") ){
+				continue;
+			}
+			else if(current.startsWith("Co-Requisites")){
+				co_req = current.substring(14);
+			}
+			else if(current.startsWith("Pre-Requisites")){
+				pre_req = current.substring(15);
+			}
+			else if(current.startsWith("Repeat")){
+				repeat = current.substring(14);
+			}
+			else {//collect the exceptions and restrictions
+				restrictions.add(current);
+			}
+			
+		}
+		String[] result = {college, department, pre_req, co_req, repeat, restrictions.toString()};		
+		return result;
 	}
 	
-	private static String trim(String s, int width) {
-        if (s.length() > width)
-            return s.substring(0, width-6) + "...";
-        else
-            return s;
-    }
-
 
 }
