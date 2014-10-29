@@ -7,11 +7,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class BaseCase {
+public class BaseCase {	
 	
-	Course course = new Course();
 	private List<String> courseDetails = new ArrayList<String>();
-	String txtbkLink;
+	private List<String> otherDetails = new ArrayList<String>();
+	private String txtbkLink;
+	private String courseD;
+	private String college;
+	private String department;
+	private String enroll_rest;
+	private String co_req;
+	private String pre_req;
+	private String repeat;
 	
 	public void traverse(Document doc) {
 		Elements theader = doc.select(".tableHeader");
@@ -33,9 +40,40 @@ public class BaseCase {
 		}
 		
 		//get course description
+		Elements cDescs = doc.select("div.courseDesc");
+		for(Element elem: cDescs) {
+			courseD = elem.text();
+			Element temp = elem.nextElementSibling();
+			college = temp.nextElementSibling().text();
+			temp = temp.nextElementSibling();
+			department = temp.nextElementSibling().text();
+			temp = temp.nextElementSibling();
+			temp = temp.nextElementSibling();
+			temp = temp.nextElementSibling();
+			enroll_rest = temp.nextElementSibling().text();
+			temp = temp.nextElementSibling();
+			if(temp.nextElementSibling().text().equals(""))
+				temp = temp.nextElementSibling();
+			co_req = temp.nextElementSibling().text();
+			temp = temp.nextElementSibling();
+			pre_req = temp.nextElementSibling().text();
+			temp = temp.nextElementSibling();
+			repeat = temp.nextElementSibling().text();
+			/*do {
+				temp = temp.nextElementSibling();
+				if (temp.text().equals("")){
+					temp = temp.nextElementSibling();
+				}
+				else {
+					otherDetails.add(temp.text());
+				}
+			}while()
+			
+			*/
+		}
 		
-		
-		System.out.printf("%s\t%s\t%s\t%s\t%s\t%20s\t%20s\t%20s\t%15s\t%s\t%s\t%s\t%s\t%s\t%s", 
+		/*
+		System.out.printf("%s\t%s\t%s\t%s\t%s\t%20s\t%20s\t%20s\t%15s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
 				courseDetails.get(0), 	//CRN
 				courseDetails.get(1), 	//subject code
 				courseDetails.get(2),	//course number
@@ -53,7 +91,10 @@ public class BaseCase {
 				courseDetails.get(14)	//dates
 				);	
 		
+		System.out.println(courseD);
+		System.out.println(college + "\n" + department + "\nen " + enroll_rest + "\nco " + co_req + "\npre " + pre_req + "\nrep " + repeat);
 		
+		*/
 	}
 	
 	public void print(String str){

@@ -62,33 +62,28 @@ public class ListLinks {
         else if(url.contains("courseDetails")) {
         	BaseCase page = new BaseCase();
         	page.traverse(doc);
+        	return;
         }
+        
+        //place "return" in any case you do not wish to run statements below
     	//by now we have all the subjects in the subjects list.
         print("\n=================================");
-    	/*print("quarter size " + quarterList.size());
+    	print("quarter size " + quarterList.size());
     	print("coll size " + collegeList.size());
     	print("subjects size " + subjectList.size());
-    	print("courses size " + courseList.size());*/
+    	print("courses size " + courseList.size());
         
     }
     
     //Helper functions
     
-    //Check if list contains a URL
-    private boolean isAdded(String url, List<String> list){
-    	boolean isAdded = false;
-    	for(int i=0; i<list.size(); i++)
-    		if ( list.get(i).equals(url))
-    			isAdded = true;
-    	return isAdded;
-    }
     
     //Add links with this pattern to this list
     private void add( Elements links, String pattern, List<String> list ){
     	for(Element link: links) {
     		String url = link.attr("abs:href").toString();
 	    	if( url.contains(pattern)) 
-				if(! isAdded(url, list))
+				if(! list.contains(url))
 					list.add(url);
     	}
     }
@@ -100,8 +95,9 @@ public class ListLinks {
     
     private void goThrough(List<String> list) throws IOException {
     	for(String temp: list)
-    		if(! isAdded(temp, processedList))
+    		if(! processedList.contains(temp))
     			process(temp);
+    		else print("processedlist contains this guy");
     }
     
     private void print(String str){
