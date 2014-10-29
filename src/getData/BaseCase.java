@@ -1,9 +1,11 @@
 package getData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Collections;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,16 +16,15 @@ public class BaseCase {
 	private List<String> courseDetails = new ArrayList<String>();
 	private List<String> otherDetails = new ArrayList<String>();
 	private List<String> restrictions = new ArrayList<String>();
+	private List<String> fullList = new ArrayList<String>();
+	private List<List<String>> mightyList = new ArrayList<List<String>>();
 	private String txtbkLink;
 	private String courseD;
 	private String college;
 	private String department;
-	private String enroll_rest;
 	private String co_req;
 	private String pre_req;
 	private String repeat;
-	private String temp;
-	private String credits;
 	
 	public void traverse(Document doc) {
 		Elements theader = doc.select(".tableHeader");
@@ -55,7 +56,7 @@ public class BaseCase {
 		}
 		
 		String[] moreInfo = extract(otherDetails);
-		System.out.printf("\n%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s", 
+		System.out.printf("\n%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s", 
 				courseDetails.get(0), 	//CRN
 				courseDetails.get(1), 	//subject code
 				courseDetails.get(2),	//course number
@@ -77,8 +78,38 @@ public class BaseCase {
 				moreInfo[3],			//Co-requisites
 				moreInfo[4],			//repeat
 				moreInfo[5],			//Restrictions list
-				courseD					//Course Description
+				courseD,				//Course Description
+				txtbkLink				//Textbook link
 				);	
+		
+		fullList = Arrays.asList(
+				courseDetails.get(0), 	//CRN
+				courseDetails.get(1), 	//subject code
+				courseDetails.get(2),	//course number
+				courseDetails.get(3),	//section
+				courseDetails.get(4),	//credit
+				courseDetails.get(5),	//title
+				courseDetails.get(6),	//campus
+				courseDetails.get(7),	//instructor
+				courseDetails.get(8),	//instruction type
+				courseDetails.get(9),	//instruction method
+				courseDetails.get(10),	//Max Enroll
+				courseDetails.get(11),	//Enroll
+				courseDetails.get(12),	//Section comments
+				courseDetails.get(13),	//Textbooks
+				courseDetails.get(14),	//dates
+				moreInfo[0],			//College
+				moreInfo[1],			//Department
+				moreInfo[2],			//Pre-requisites
+				moreInfo[3],			//Co-requisites
+				moreInfo[4],			//repeat
+				moreInfo[5],			//Restrictions list
+				courseD,				//Course Description
+				txtbkLink				//Textbook link
+				);	
+		
+		mightyList.add(fullList);		
+		
 	}
 	
 	public String[] extract(List<String> list){
