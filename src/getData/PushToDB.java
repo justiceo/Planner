@@ -11,7 +11,9 @@ public class PushToDB {
     public void push( List<List<String>> mightyList){
 
         //unwrap the list
+        for(List<String> list: mightyList) {
 
+        }
         //generate the sql insert statements for every course
         //add to batch
 
@@ -28,10 +30,14 @@ public class PushToDB {
             // increase the price by 7% and qty by 1 for id=1001
 
             int returnCode;
-            returnCode = statement.executeUpdate("create table test_table2 (id int primary key, name varchar(20))");
+            returnCode = statement.executeUpdate("create table test_table3 (id int primary key, name varchar(20))");
             System.out.println(returnCode + " records affected.");
 
-            ResultSet rset = statement.executeQuery("select * from test_table2");
+            returnCode = statement.executeUpdate(
+                    "insert into test_table3 values (1, 'one'), (2, 'two')");
+            System.out.println(returnCode + " records affected.");
+
+            ResultSet rset = statement.executeQuery("select * from test_table3");
             while(rset.next()) {
                 System.out.println(rset.getInt("id") + ", " + rset.getString("name"));
             }
