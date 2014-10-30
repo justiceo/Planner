@@ -1,15 +1,13 @@
 package getData;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Collections;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class BaseCase {	
 	
@@ -145,6 +143,10 @@ public class BaseCase {
 		String[] result = {college, department, pre_req, co_req, repeat, restrictions.toString()};		
 		return result;
 	}
+
+    public List<List<String>> getMightyList() {
+        return mightyList;
+    }
 	
 
 }

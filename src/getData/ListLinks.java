@@ -42,6 +42,7 @@ public class ListLinks {
         	add( links, "collSubj", collegeList);
         	processedList.add( url );
         	goThrough( collegeList );
+
         }
         
         //URL is college get all the subjects,
@@ -49,6 +50,7 @@ public class ListLinks {
         	add(links, "subjectDetails", subjectList);
         	processedList.add( url );
         	goThrough( subjectList );
+
         }
         
         //URL is major or subjects page
@@ -56,6 +58,7 @@ public class ListLinks {
         	add( links, "courseDetails", courseList);
         	processedList.add( url );
         	goThrough( courseList );
+
         }
         
         //We have reached our base case. Time to process the page
@@ -69,10 +72,16 @@ public class ListLinks {
         //place "return" in any case you do not wish to run statements below
     	//by now we have all the subjects in the subjects list.
         print("\n=================================");
-    	/*print("quarter size " + quarterList.size());
+    	print("quarter size " + quarterList.size());
     	print("coll size " + collegeList.size());
     	print("subjects size " + subjectList.size());
-    	print("courses size " + courseList.size());*/
+    	print("courses size " + courseList.size());
+
+        //Push all the courses in the mighty list to the database
+        BaseCase allCourses = new BaseCase();
+        List<List<String>> mightyList = allCourses.getMightyList();
+        PushToDB pushDb = new PushToDB();
+        pushDb.push(mightyList);
         
     }
     
